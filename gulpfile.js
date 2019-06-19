@@ -1,17 +1,5 @@
 'use strict';
 
-/* параметры для gulp-autoprefixer */
-var autoprefixerList = [
-    'Chrome >= 45',
-    'Firefox ESR',
-    'Edge >= 12',
-    'Explorer >= 10',
-    'iOS >= 9',
-    'Safari >= 9',
-    'Android >= 4.4',
-    'Opera >= 30'
-];
-
 /* пути к исходным файлам (src), к готовым файлам (build), а также к тем, за изменениями которых нужно наблюдать (watch) */
 var path = {
     build: {
@@ -31,7 +19,7 @@ var path = {
     watch: {
         html: 'assets/src/**/*.html',
         js: 'assets/src/js/**/*.js',
-        css: 'assets/src/style/**/*.scss',
+        style: 'assets/src/style/**/*.scss',
         img: 'assets/src/img/**/*.*',
         fonts: 'assets/srs/fonts/**/*.*'
     },
@@ -85,9 +73,7 @@ gulp.task('css:build', function () {
         .pipe(plumber()) // для отслеживания ошибок
         .pipe(sourcemaps.init()) // инициализируем sourcemap
         .pipe(sass()) // scss -> css
-        .pipe(autoprefixer({ // добавим префиксы
-            browsers: autoprefixerList
-        }))
+        .pipe(autoprefixer()) // добавим префиксы
         .pipe(gulp.dest(path.build.css))
         .pipe(rename({ suffix: '.min' }))
         .pipe(cleanCSS()) // минимизируем CSS
@@ -159,7 +145,7 @@ gulp.task('build',
 // запуск задач при изменении файлов
 gulp.task('watch', function () {
     gulp.watch(path.watch.html, gulp.series('html:build'));
-    gulp.watch(path.watch.css, gulp.series('css:build'));
+    gulp.watch(path.watch.style, gulp.series('css:build'));
     gulp.watch(path.watch.js, gulp.series('js:build'));
     gulp.watch(path.watch.img, gulp.series('image:build'));
     gulp.watch(path.watch.fonts, gulp.series('fonts:build'));
@@ -168,5 +154,5 @@ gulp.task('watch', function () {
 // задача по умолчанию
 gulp.task('default', gulp.series(
     'build',
-    gulp.parallel('webserver','watch')      
+    gulp.parallel('webserver', 'watch')      
 ));
